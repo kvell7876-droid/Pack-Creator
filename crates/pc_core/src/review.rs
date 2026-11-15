@@ -35,6 +35,9 @@ pub struct ScenePlan {
     /// Where and how the scene plays: one of [`SCENE_TYPES`]. Empty keeps what her profile says (an on-player scene when it says nothing).
     #[serde(default)]
     pub scene_type: String,
+    /// How far the bed is moved from where it is by default, for a scene on a bed (`bed_offset` in the old profile). None keeps what the profile says.
+    #[serde(default)]
+    pub bed_offset: Option<f64>,
 }
 
 /// The game's scene types (`type` in a scene file).
@@ -212,7 +215,7 @@ pub fn detect(clips: &[String]) -> Vec<ScenePlan> {
         .map(|(stem, parts)| {
             let scene_type = guess_type(&stem, &parts.keys().copied().collect::<Vec<_>>());
 
-            ScenePlan { name: title_of(&stem), parts: parts.into_iter().map(|(role, names)| (role.to_string(), names)).collect(), scene_type }
+            ScenePlan { name: title_of(&stem), parts: parts.into_iter().map(|(role, names)| (role.to_string(), names)).collect(), scene_type, bed_offset: None }
         })
         .collect()
 }
@@ -251,7 +254,7 @@ fn plans_of_profile(profile: &Value) -> Vec<ScenePlan> {
             }
         }
 
-        plans.push(ScenePlan { name: name.to_string(), parts, scene_type });
+        plans.push(ScenePlan { name: name.to_string(), parts, scene_type, bed_offset: scene.get("bed_offset").and_then(Value::as_f64) });
     }
 
     plans
@@ -422,6 +425,10 @@ pub fn apply_plan(profile_text: &str, plan: &[ScenePlan]) -> Result<String> {
                 }
             }
 
+            if let Some(offset) = scene.bed_offset {
+                map.insert("bed_offset".into(), json!(offset));
+            }
+
             if !scene.scene_type.is_empty() {
                 map.insert("scene_type".into(), json!(scene.scene_type.to_uppercase()));
                 map.remove("is_bed_scene");
@@ -547,7 +554,7 @@ mod tests {
         /* The person moves hug_fast out of the scene and into nothing, and makes a second scene out of the idle clip. */
         let plan = vec![
             ScenePlan { name: "Hug".into(), parts: BTreeMap::from([("slow".to_string(), names(&["hug_slow"]))]), ..Default::default() },
-            ScenePlan { name: "Stand".into(), parts: BTreeMap::from([("loop".to_string(), names(&["idle"]))]), scene_type: "stationary".into() },
+            ScenePlan { name: "Stand".into(), parts: BTreeMap::from([("loop".to_string(), names(&["idle"]))]), scene_type: "stationary".into(), ..Default::default() },
         ];
         let existing = std::collections::HashSet::new();
         let outcome = crate::oldpack::import_girl(
@@ -588,7 +595,7 @@ mod tests {
         assert_eq!(read[0].parts["solo_intro"], names(&["a"]));
         assert_eq!(read[0].scene_type, "stationary_intro");
 
-        let plan = ScenePlan { name: "Pose".into(), parts: BTreeMap::from([("solo_intro".to_string(), names(&["x"])), ("loop".to_string(), names(&["y"]))]), scene_type: "downed".into() };
+        let plan = ScenePlan { name: "Pose".into(), parts: BTreeMap::from([("solo_intro".to_string(), names(&["x"])), ("loop".to_string(), names(&["y"]))]), scene_type: "downed".into(), ..Default::default() };
         let written: Value = serde_json::from_str(&apply_plan(profile, &[plan]).unwrap()).unwrap();
 
         assert_eq!(written["scenes"][0]["scene_type"], "DOWNED");

@@ -12,7 +12,10 @@ import { entityAt, SpringSim, type BoneFrame, type Motion, type SpringParams, ty
 const FACE_NAMES = ['west', 'east', 'north', 'south', 'up', 'down'];
 const RAD = Math.PI / 180;
 /** Bones that are the scene rig (the partner's body, items, armour, cameras) and not part of the girl. */
-const RIG = /^(steve|items|itemrenderer|weapon|armor.*|girlcam|boycam|boobwindow|torso2|rightleg|leftleg|chest)$/i;
+const RIG = /^(steve|items|itemrenderer|weapon|armor.*|girlcam|boycam|boobwindow)$/i;
+/** Names a girl's own bones can have too (an old model's `chest` holds her head and arms): they are the partner's only at the top of the model, as `steve`'s children are. */
+const RIG_ROOT = /^(torso2|rightleg|leftleg|chest)$/i;
+const isRigName = (name: string, root: boolean) => RIG.test(name) || (root && RIG_ROOT.test(name));
 
 type Corner = [number, number, number];
 
@@ -151,6 +154,10 @@ function buildCube(cube: ModelData['cubes'][number], texture: ModelTexture, unit
   for (const face of cube.faces) {
     const corners = faceCorners(FACE_NAMES[face.faceId] ?? 'down', lo[0], lo[1], lo[2], hi[0], hi[1], hi[2]);
     let uv: [number, number][] = [[face.u1, face.v1], [face.u2, face.v1], [face.u2, face.v2], [face.u1, face.v2]];
+
+    /* In Blockbench and the game the top face's image has its bottom edge on the north side and the bottom face's has its top edge there (the cross layout of a box UV puts the
+       top above the north face), with the image's left to right still running west to east. The corners above are listed north-first for both, so their rows are swapped. */
+    if (face.faceId === 4 || face.faceId === 5) uv = [uv[3], uv[2], uv[1], uv[0]];
 
     if (cube.mirror) uv = [uv[1], uv[0], uv[3], uv[2]];
 
@@ -323,6 +330,8 @@ function sample(keys: KeyData[], time: number, fallback: [number, number, number
 interface Bone {
   name: string;
   node: THREE.Group;
+  /** Whether this bone itself is part of the scene rig (its children follow it). */
+  rigSelf: boolean;
   rest: { rotation: number[]; offset: number[] };
 }
 
@@ -604,7 +613,7 @@ export function createViewer(container: HTMLElement): Viewer {
     materials.lit.color.set(0xffffff);
   }
   function applyRig(): void {
-    for (const bone of bones) bone.node.visible = !(RIG.test(bone.name) && rigHidden);
+    for (const bone of bones) bone.node.visible = !(bone.rigSelf && rigHidden);
   }
 
   function frameModel(): void {
@@ -818,9 +827,9 @@ export function createViewer(container: HTMLElement): Viewer {
         setEuler(node, bone.rotation);
         node.name = bone.name;
         nodes.push(node);
-        rigBone.push(RIG.test(bone.name) || (bone.parentIndex >= 0 && rigBone[bone.parentIndex] === true));
+        rigBone.push(isRigName(bone.name, bone.parentIndex < 0) || (bone.parentIndex >= 0 && rigBone[bone.parentIndex] === true));
         (bone.parentIndex >= 0 && nodes[bone.parentIndex] ? nodes[bone.parentIndex] : root!).add(node);
-        bones.push({ name: bone.name, node, rest: { rotation: [...bone.rotation], offset } });
+        bones.push({ name: bone.name, node, rigSelf: isRigName(bone.name, bone.parentIndex < 0), rest: { rotation: [...bone.rotation], offset } });
         boneByName.set(bone.name, bones[bones.length - 1]);
 
         for (const element of bone.elements) {

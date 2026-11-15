@@ -4,7 +4,7 @@ import type { MutableRef } from 'preact/hooks';
 import { api } from './api';
 import { Dialog } from './Dialogs';
 import { messageOf, notify } from './notify';
-import type { ClipData, GirlLook, ScenePlan } from './types';
+import type { ClipData, GirlLook, ModelData, ScenePlan } from './types';
 import { createViewer, type Viewer as Scene } from './viewer/scene';
 
 /** What the person has settled for one girl while going through the review. */
@@ -140,6 +140,7 @@ export function GirlReview({ pack, ids, initial, bodyTypes, onDone, onClose }: {
   const [showBed, setShowBed] = useState(false);
   const playerNow = useRef(false);
   const bedNow = useRef(false);
+  const bedModel = useRef<{ model: ModelData; texture: string } | null>(null);
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<Target | null>(null);
 
@@ -154,6 +155,9 @@ export function GirlReview({ pack, ids, initial, bodyTypes, onDone, onClose }: {
   const editable = !!look && !look.files_layout;
 
   clipNow.current = clip;
+
+  const sceneOfClip = plan.find(s => Object.values(s.parts).some(list => list.includes(clipName)));
+  const bedOffset = sceneOfClip?.bed_offset ?? 0;
 
   const change = (patch: Partial<Draft>) => setDrafts(previous => ({ ...previous, [id]: { ...previous[id], ...patch } }));
   const setPlan = (next: ScenePlan[]) => change({ scenes: next, reviewed: true });
@@ -285,10 +289,15 @@ export function GirlReview({ pack, ids, initial, bodyTypes, onDone, onClose }: {
       return;
     }
 
-    void api.bundledBed().then(bed => { if (current && bedNow.current) scene.current?.setBed({ model: bed.model, texture: bed.texture, forward: 1 }); }).catch(error => notify(messageOf(error)));
+    void api.bundledBed().then(bed => { if (current && bedNow.current) { bedModel.current = bed; scene.current?.setBed({ model: bed.model, texture: bed.texture, forward: 1 - bedOffset }); } }).catch(error => notify(messageOf(error)));
 
     return () => { current = false; };
   }, [showBed]);
+
+  /* The bed sits where the scene puts it: moved by the offset of the scene the clip belongs to, as the game does with bed_alignment_offset. */
+  useEffect(() => {
+    if (showBed && bedModel.current) scene.current?.setBed({ model: bedModel.current.model, texture: bedModel.current.texture, forward: 1 - bedOffset });
+  }, [bedOffset]);
 
   /* The reference girl, one of the game's own: a second view that exists only while comparing (a view nobody sees would still be drawn every frame), shown the same way (nude or
      dressed) as the one being looked at. */
@@ -375,6 +384,7 @@ export function GirlReview({ pack, ids, initial, bodyTypes, onDone, onClose }: {
   };
 
   const rename = (at: number, name: string) => setPlan(plan.map((s, i) => (i === at ? { ...s, name } : s)));
+  const setBedOffset = (at: number, bed_offset: number | null) => setPlan(plan.map((s, i) => (i === at ? { ...s, bed_offset } : s)));
   const retype = (at: number, scene_type: string) => setPlan(plan.map((s, i) => (i === at ? { ...s, scene_type } : s)));
   const remove = (at: number) => setPlan(plan.filter((_, i) => i !== at));
   const addScene = () => setPlan([...plan, { name: 'New scene', parts: {}, scene_type: 'on_player' }]);
@@ -614,6 +624,12 @@ export function GirlReview({ pack, ids, initial, bodyTypes, onDone, onClose }: {
                     <select class="input small-select type-select" title={type.hint} value={type.id} onChange={e => retype(si, (e.target as HTMLSelectElement).value)}>
                       {TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                     </select>
+                    {type.id === 'on_bed' && (
+                      <label class="row" style="gap:6px;align-items:center" title="How far the bed is moved from where it is by default (blocks). The Bed preview follows it while one of this scene's clips is playing.">
+                        <span class="muted">Bed offset</span>
+                        <input class="input" style="width:80px" type="number" step="0.05" value={s.bed_offset ?? 0} onChange={e => { const n = Number((e.target as HTMLInputElement).value); setBedOffset(si, Number.isFinite(n) ? n : null); }} />
+                      </label>
+                    )}
                     {missing && <div class="hint" style="color:var(--warning)">{solo ? 'A scene she plays alone needs a loop clip.' : 'A scene needs a slow or a fast clip to play.'}</div>}
                     {type.roles.map(role => slotOf(s, si, role))}
                     {extras.map(role => slotOf(s, si, role))}

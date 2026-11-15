@@ -293,6 +293,8 @@ export interface ScenePlan {
   parts: Record<string, string[]>;
   /** Where and how the scene plays (a scene file's type). Empty keeps what her profile says. */
   scene_type: string;
+  /** How far the bed is moved, for a scene on a bed (null keeps her profile's). */
+  bed_offset?: number | null;
 }
 
 /** What looking at one old girl found. */
