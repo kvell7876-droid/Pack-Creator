@@ -518,6 +518,27 @@ pub fn taken_tame_items(root: &Path) -> Vec<String> {
     found
 }
 
+/// Reads many files under `base` at once (a pack holds thousands of sounds), keeping their order.
+fn read_many(base: &Path, rels: &[String]) -> Result<Vec<(String, Vec<u8>)>> {
+    let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4).min(8);
+    let chunk = rels.len().div_ceil(threads).max(1);
+    let parts: Vec<Result<Vec<(String, Vec<u8>)>>> = std::thread::scope(|scope| {
+        let handles: Vec<_> = rels
+            .chunks(chunk)
+            .map(|part| scope.spawn(move || part.iter().map(|rel| fs::read(base.join(rel)).map(|bytes| (rel.clone(), bytes)).map_err(|e| Error::io(rel, e))).collect::<Result<Vec<_>>>()))
+            .collect();
+
+        handles.into_iter().map(|h| h.join().unwrap_or_else(|_| Err(Error::Other("a file could not be read".into())))).collect()
+    });
+    let mut all = Vec::with_capacity(rels.len());
+
+    for part in parts {
+        all.extend(part?);
+    }
+
+    Ok(all)
+}
+
 /// The cues (the tokens of her sound effects) her old animations fire, and how many times, so the person can decide what each becomes before importing.
 pub fn scan_cues(pack: &OldPack, raw_id: &str) -> Result<BTreeMap<String, usize>> {
     let id = lowercase_id(raw_id);
@@ -691,6 +712,11 @@ pub fn import_girl(pack: &OldPack, request: &Request, reference: &Reference) -> 
     } else if pack.root.join(format!("animations/base.{}.animation.json", request.raw_id)).is_file() {
         /* The pack already uses the newer layout: every file is converted as it is. */
         let mut count = 0;
+        let girl_ids: std::collections::HashSet<String> = pack.girls.iter().map(|g| g.to_lowercase()).collect();
+        /* Whether a file's name is one of some girl's (`base.<id>` or `<scene>-<id>`), found by looking the endings up, not by trying every girl. */
+        let owner_known = |name: &str| {
+            name.strip_prefix("base.").is_some_and(|rest| girl_ids.contains(rest)) || name.match_indices('-').any(|(at, _)| girl_ids.contains(&name[at + 1..]))
+        };
 
         for rel in crate::check::walk(&pack.root.join("animations")) {
             let Some(stem) = rel.strip_suffix(".animation.json").or_else(|| rel.strip_suffix(".scene.json")) else { continue };
@@ -706,7 +732,7 @@ pub fn import_girl(pack: &OldPack, request: &Request, reference: &Reference) -> 
 
             if belongs_to(&id) || belongs_to(request.raw_id) {
                 /* hers */
-            } else if pack.girls.iter().any(|g| belongs_to(g)) || request.skip_shared {
+            } else if request.skip_shared || owner_known(&name) {
                 continue;
             }
 
@@ -765,19 +791,24 @@ pub fn import_girl(pack: &OldPack, request: &Request, reference: &Reference) -> 
         None => notes.push(Note { level: Level::Error, message: format!("textures/entities/{}.png is missing.", request.raw_id) }),
     }
 
-    for rel in crate::check::walk(&pack.root.join("textures")).into_iter().filter(|_| !request.skip_shared) {
+    let girl_textures: std::collections::HashSet<String> = pack.girls.iter().map(|g| format!("entities/{}.png", g.to_lowercase())).collect();
+    let shared_textures: Vec<String> = crate::check::walk(&pack.root.join("textures"))
+        .into_iter()
+        .filter(|_| !request.skip_shared)
         /* Her own texture is written with her above, and another girl's comes with her when she is imported. */
-        if rel == format!("entities/{}.png", request.raw_id) || pack.girls.iter().any(|g| rel.eq_ignore_ascii_case(&format!("entities/{g}.png"))) {
-            continue;
-        }
+        .filter(|rel| *rel != format!("entities/{}.png", request.raw_id) && !girl_textures.contains(&rel.to_lowercase()))
+        .collect();
 
-        files.push((format!("{SYNC}/textures/{rel}"), fs::read(pack.root.join("textures").join(&rel)).map_err(|e| Error::io(&rel, e))?));
+    for (rel, bytes) in read_many(&pack.root.join("textures"), &shared_textures)? {
+        files.push((format!("{SYNC}/textures/{rel}"), bytes));
     }
 
     let mut sound_files = 0;
 
-    for rel in crate::check::walk(&pack.root.join("sounds")).into_iter().filter(|_| !request.skip_shared) {
-        files.push((format!("{SYNC}/sounds/{rel}"), fs::read(pack.root.join("sounds").join(&rel)).map_err(|e| Error::io(&rel, e))?));
+    let sound_list: Vec<String> = crate::check::walk(&pack.root.join("sounds")).into_iter().filter(|_| !request.skip_shared).collect();
+
+    for (rel, bytes) in read_many(&pack.root.join("sounds"), &sound_list)? {
+        files.push((format!("{SYNC}/sounds/{rel}"), bytes));
         sound_files += 1;
     }
 

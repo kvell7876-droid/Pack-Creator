@@ -1214,10 +1214,9 @@ struct OldPackInfo {
 
 /// The girls an old resource pack (a folder or a zip) holds.
 #[tauri::command(async)]
-fn old_pack_girls(path: String) -> Reply<OldPackInfo> {
-    let pack = pc_core::oldpack::open(&PathBuf::from(path)).map_err(text_of)?;
-
-    Ok(OldPackInfo { girls: pack.girls.clone(), namespace: pack.namespace.clone(), rewritten: pack.rewritten })
+fn old_pack_girls(app: State<App>, path: String) -> Reply<OldPackInfo> {
+    /* Opened into the one held for the dialog, so a zip is unpacked once and not again for every look at a girl. */
+    app.with_old_pack(&path, |pack| Ok(OldPackInfo { girls: pack.girls.clone(), namespace: pack.namespace.clone(), rewritten: pack.rewritten }))
 }
 
 /// Converts one model (`.geo.json`) or animation (`.animation.json`) file into the pack as a `.strutmodel` or `.strutanim` for a girl. Nothing is overwritten.
@@ -1343,10 +1342,8 @@ struct CueCount {
 
 /// The cues a girl's old animations fire, for deciding what each becomes.
 #[tauri::command(async)]
-fn old_pack_cues(path: String, girl: String) -> Reply<Vec<CueCount>> {
-    let pack = pc_core::oldpack::open(&PathBuf::from(path)).map_err(text_of)?;
-
-    Ok(pc_core::oldpack::scan_cues(&pack, &girl).map_err(text_of)?.into_iter().map(|(token, count)| CueCount { token, count }).collect())
+fn old_pack_cues(app: State<App>, path: String, girl: String) -> Reply<Vec<CueCount>> {
+    app.with_old_pack(&path, |pack| Ok(pc_core::oldpack::scan_cues(pack, &girl).map_err(text_of)?.into_iter().map(|(token, count)| CueCount { token, count }).collect()))
 }
 
 /// For each girl id, her old profile if the folder holds `<id>.json` (the old config keeps one file for each girl).
@@ -1380,7 +1377,6 @@ fn import_old_pack(app: State<App>, pack: String, jobs: Vec<GirlJob>, liquid: bo
     use pc_core::convert::events::{CueAction, CueRule, Mapping};
 
     let (root, meta) = app.open()?;
-    let opened = pc_core::oldpack::open(&PathBuf::from(&pack)).map_err(text_of)?;
     let mut mapping = Mapping::new();
 
     for rule in rules {
@@ -1397,8 +1393,10 @@ fn import_old_pack(app: State<App>, pack: String, jobs: Vec<GirlJob>, liquid: bo
     let several = jobs.len() > 1;
     let mut result = ImportResult { girl: String::new(), written: Vec::new(), notes: Vec::new() };
 
+    /* The pack the dialog already opened (a zip is not unpacked again). */
+    app.with_old_pack(&pack, |opened| {
     for (position, job) in jobs.into_iter().enumerate() {
-        let one = import_one(&app, &root, &meta, &opened, &job, liquid, physics_preset, &mapping, position > 0)?;
+        let one = import_one(&app, &root, &meta, opened, &job, liquid, physics_preset, &mapping, position > 0)?;
 
         if result.girl.is_empty() {
             result.girl = one.girl;
@@ -1407,6 +1405,9 @@ fn import_old_pack(app: State<App>, pack: String, jobs: Vec<GirlJob>, liquid: bo
         result.written.extend(one.written);
         result.notes.extend(one.notes.into_iter().map(|n| if several { Note { level: n.level, message: format!("{}: {}", job.girl, n.message) } } else { n }));
     }
+
+    Ok(())
+    })?;
 
     Ok(result)
 }
@@ -1435,20 +1436,43 @@ fn import_one(app: &App, root: &std::path::Path, meta: &ProjectMeta, opened: &pc
     )
     .map_err(text_of)?;
 
-    for (rel, bytes) in &outcome.files {
-        if let Some(parent) = PathBuf::from(rel).parent() {
-            if !parent.as_os_str().is_empty() {
-                fs_ops::create_dir(&root, &parent.to_string_lossy().replace('\\', "/")).ok();
-            }
-        }
+    /* The folders are made once each, then the files are written several at a time: a girl brings hundreds of sounds, and a folder of them is slow one by one. */
+    let mut targets: Vec<(PathBuf, &Vec<u8>)> = Vec::with_capacity(outcome.files.len());
+    let mut folders = std::collections::HashSet::new();
 
+    for (rel, bytes) in &outcome.files {
         let path = fs_ops::resolve(&root, rel).map_err(text_of)?;
 
         if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent).map_err(text_of)?;
+            if folders.insert(parent.to_path_buf()) {
+                std::fs::create_dir_all(parent).map_err(text_of)?;
+            }
         }
 
-        std::fs::write(&path, bytes).map_err(|e| format!("{rel} could not be written: {e}"))?;
+        targets.push((path, bytes));
+    }
+
+    let failed = std::sync::Mutex::new(None::<String>);
+    let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4).min(8);
+    let chunk = targets.len().div_ceil(threads).max(1);
+
+    std::thread::scope(|scope| {
+        for part in targets.chunks(chunk) {
+            let failed = &failed;
+
+            scope.spawn(move || {
+                for (path, bytes) in part {
+                    if let Err(error) = std::fs::write(path, bytes) {
+                        failed.lock().unwrap().get_or_insert(format!("{} could not be written: {error}", path.display()));
+                        return;
+                    }
+                }
+            });
+        }
+    });
+
+    if let Some(message) = failed.into_inner().unwrap() {
+        return Err(message);
     }
 
     let mut written: Vec<String> = outcome.files.iter().map(|(rel, _)| rel.clone()).collect();
