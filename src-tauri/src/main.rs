@@ -1530,6 +1530,8 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
+            std::thread::spawn(clear_stale_unpacked);
+
             let data = app.path().app_data_dir().unwrap_or_else(|_| PathBuf::from("."));
 
             app.manage(App { reference: Reference::builtin(), recent_file: data.join("recent.json"), current: Mutex::new(None), old: Mutex::new(None) });
@@ -1611,6 +1613,32 @@ fn main() {
             saves_dir,
             schema_for
         ])
-        .run(tauri::generate_context!())
-        .expect("the Pack Creator could not start");
+        .build(tauri::generate_context!())
+        .expect("the Pack Creator could not start")
+        .run(|handle, event| {
+            /* The old pack held for the import dialog was unpacked into a temporary folder; it is removed when the window closes. */
+            if let tauri::RunEvent::Exit = event {
+                if let Some(app) = handle.try_state::<App>() {
+                    *app.old.lock().unwrap() = None;
+                }
+            }
+        });
+}
+
+/// Removes the temporary folders of packs unpacked by an earlier run that did not get to clean up (it was closed in the middle of an import, or crashed).
+fn clear_stale_unpacked() {
+    let mine = std::process::id().to_string();
+    let Ok(entries) = std::fs::read_dir(std::env::temp_dir()) else { return };
+
+    for entry in entries.flatten() {
+        let name = entry.file_name().to_string_lossy().to_string();
+        let Some(rest) = name.strip_prefix("ph-oldpack-").or_else(|| name.strip_prefix("ph-fapcraft-")) else { continue };
+
+        /* Not this run's, and not touched for ten minutes (another window of the program may still be using it). */
+        let old_enough = entry.metadata().and_then(|m| m.modified()).ok().and_then(|t| t.elapsed().ok()).map_or(false, |age| age.as_secs() > 600);
+
+        if rest.split('-').next() != Some(mine.as_str()) && old_enough {
+            let _ = std::fs::remove_dir_all(entry.path());
+        }
+    }
 }
