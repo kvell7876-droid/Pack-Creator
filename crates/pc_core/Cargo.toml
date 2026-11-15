@@ -1,0 +1,15 @@
+[package]
+name = "pc_core"
+version = "0.1.0"
+edition = "2021"
+description = "The logic of the Pleasure Horizons Pack Creator: projects, pack layout, the game reference and the checks."
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+trash = "5"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+[dev-dependencies]
+tempfile = "3"

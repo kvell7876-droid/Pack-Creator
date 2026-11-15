@@ -1,0 +1,20 @@
+[package]
+name = "pack-creator"
+version = "0.1.0"
+edition = "2021"
+description = "Pleasure Horizons Pack Creator"
+build = "build.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+pc_core = { path = "../crates/pc_core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+tungstenite = "0.24"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_System_Ole"] }

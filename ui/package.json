@@ -1,0 +1,29 @@
+{
+  "name": "pack-creator-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test:sim": "esbuild src/sim/planner.test.ts --bundle --platform=node --format=esm --outfile=dist-test/sim.test.mjs --log-level=warning && node dist-test/sim.test.mjs",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test:physics": "esbuild src/viewer/physics.test.ts --bundle --platform=node --format=esm --outfile=dist-test/physics.test.mjs --log-level=warning && node dist-test/physics.test.mjs",
+    "test:easing": "esbuild src/viewer/easing.test.ts --bundle --platform=node --format=esm --outfile=dist-test/easing.test.mjs --log-level=warning && node dist-test/easing.test.mjs",
+    "test:molang": "esbuild src/viewer/molang.test.ts --bundle --platform=node --format=esm --outfile=dist-test/molang.test.mjs --log-level=warning && node dist-test/molang.test.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@types/three": "^0.169.0",
+    "monaco-editor": "0.52.2",
+    "preact": "^10.24.0",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.9.0",
+    "@tauri-apps/cli": "^2",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  }
+}

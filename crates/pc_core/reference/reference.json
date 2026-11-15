@@ -1,0 +1,2968 @@
+{
+  "format": 2,
+  "components": {
+    "pleasurehorizons:identity": {
+      "description": "Her name and spawn egg colours.",
+      "required": true,
+      "fields": [
+        {
+          "name": "name",
+          "kind": "text",
+          "required": true,
+          "description": "The name the game shows for her."
+        },
+        {
+          "name": "egg_primary",
+          "kind": "colour",
+          "required": false,
+          "description": "Base colour of her spawn egg.",
+          "default": "#FFFFFF"
+        },
+        {
+          "name": "egg_secondary",
+          "kind": "colour",
+          "required": false,
+          "description": "Spot colour of her spawn egg.",
+          "default": "#FFFFFF"
+        }
+      ]
+    },
+    "pleasurehorizons:body": {
+      "description": "Her model lineage, hitbox, held item, lighting and bed needs.",
+      "required": true,
+      "fields": [
+        {
+          "name": "body_type",
+          "kind": "choice",
+          "required": true,
+          "description": "The base model her animations are authored against. Decides which scenes fit her.",
+          "options": [
+            "jenny",
+            "bia",
+            "ellie",
+            "luna",
+            "goblin",
+            "galath",
+            "kobold",
+            "copper_golem"
+          ]
+        },
+        {
+          "name": "hitbox_height",
+          "kind": "number",
+          "required": false,
+          "description": "Her height in blocks.",
+          "min": 0.30000001192092896,
+          "max": 5.0,
+          "default": 1.65
+        },
+        {
+          "name": "held_item_offset",
+          "kind": "vec3",
+          "required": false,
+          "description": "Moves the item in her hand as [x, y, z] in model pixels, added to where the game holds it.",
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "held_item_rotation",
+          "kind": "vec3",
+          "required": false,
+          "description": "Turns the item in her hand as [x, y, z] in degrees, added to the way the game holds it.",
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "held_item_scale",
+          "kind": "number",
+          "required": false,
+          "description": "How large the item in her hand is drawn, as a multiple of the usual size. 1 is the usual size.",
+          "min": 0.10000000149011612,
+          "max": 5.0,
+          "default": 1.0
+        },
+        {
+          "name": "shading",
+          "kind": "choice",
+          "required": false,
+          "description": "How she is shaded: soft, vanilla (the game's own lights), toon (flat tones with a clean edge) or flat (no side darker than another, for a model with its shading painted in). default uses the player's own setting.",
+          "options": [
+            "default",
+            "soft",
+            "vanilla",
+            "toon",
+            "flat"
+          ],
+          "default": "default"
+        },
+        {
+          "name": "only_uses_double_beds",
+          "kind": "boolean",
+          "required": false,
+          "description": "Whether she refuses a single bed.",
+          "default": false
+        },
+        {
+          "name": "wears_clothes",
+          "kind": "boolean",
+          "required": false,
+          "description": "Whether she has clothes to take off and put on. Set false for a girl who is always nude (the Kobold): she is never dressed or undressed, scenes that start by undressing her just start, and she needs only a nude model.",
+          "default": true
+        }
+      ]
+    },
+    "pleasurehorizons:stats": {
+      "description": "Health, speed, attack damage and belly size.",
+      "required": false,
+      "fields": [
+        {
+          "name": "health",
+          "kind": "number",
+          "required": false,
+          "description": "Maximum health.",
+          "min": 1.0,
+          "max": 1024.0,
+          "default": 20.0
+        },
+        {
+          "name": "speed",
+          "kind": "number",
+          "required": false,
+          "description": "Movement speed. 0.2 is a walking player.",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 0.2
+        },
+        {
+          "name": "damage",
+          "kind": "number",
+          "required": false,
+          "description": "Attack damage.",
+          "min": 0.0,
+          "max": 1024.0,
+          "default": 2.0
+        },
+        {
+          "name": "max_belly_inflation_size",
+          "kind": "integer",
+          "required": false,
+          "description": "How large her belly can grow.",
+          "min": 0.0,
+          "max": 100000.0,
+          "default": 550
+        },
+        {
+          "name": "sprint_speed",
+          "kind": "number",
+          "required": false,
+          "description": "Movement speed while she sprints. 0 means the same as when she walks.",
+          "min": 0.0,
+          "max": 2.0,
+          "default": 0.0
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:taste": {
+      "description": "What draws her in: the item that tames her.",
+      "required": true,
+      "fields": [
+        {
+          "name": "tame_item",
+          "kind": "item",
+          "required": true,
+          "description": "The item that tames her. Each girl needs a different one."
+        }
+      ]
+    },
+    "pleasurehorizons:personality": {
+      "description": "Her archetype, which biases her rolled tastes.",
+      "required": false,
+      "fields": [
+        {
+          "name": "personality",
+          "kind": "choice",
+          "required": false,
+          "description": "Her archetype. It biases how her likes and dislikes are rolled once.",
+          "options": [
+            "shy",
+            "bold",
+            "motherly",
+            "bratty",
+            "stoic"
+          ],
+          "default": "stoic"
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:dialogue": {
+      "description": "The lines she answers gifts with.",
+      "required": false,
+      "fields": [
+        {
+          "name": "gift_like",
+          "kind": "object",
+          "required": false,
+          "description": "Lines for a liked gift at a low relationship. One is picked at random.",
+          "default": [
+            "Nice",
+            "Thank you so much"
+          ]
+        },
+        {
+          "name": "gift_love",
+          "kind": "object",
+          "required": false,
+          "description": "Lines for a liked gift at a high relationship. One is picked at random.",
+          "default": [
+            "Oh, Thank you",
+            "Love you ~_^"
+          ]
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:ai": {
+      "description": "How she behaves: her traits, one for each category.",
+      "required": false,
+      "fields": [
+        {
+          "name": "traits",
+          "kind": "object",
+          "required": false,
+          "description": "How she behaves, as one trait for each category: { \"movement\": \"flier\", \"temperament\": { \"type\": \"skittish\", \"distance\": 10 } }. A category she leaves out gives her its default trait.",
+          "default": {}
+        },
+        {
+          "name": "preset",
+          "kind": "text",
+          "required": false,
+          "description": "The brain preset her traits start from. Leave it out for the standard one. A wild girl with no brain has none.",
+          "default": ""
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:spawn": {
+      "description": "Where and when a wild girl turns up in the world by herself. With a weight of 0 she never does.",
+      "required": false,
+      "fields": [
+        {
+          "name": "weight",
+          "kind": "integer",
+          "required": false,
+          "description": "How likely she is to be chosen against the other wild girls who fit the place. 0 means she never spawns by herself.",
+          "min": 0.0,
+          "max": 1000.0,
+          "default": 0
+        },
+        {
+          "name": "biomes",
+          "kind": "object",
+          "required": false,
+          "description": "The biomes she lives in, as ids (minecraft:swamp) or tags (#minecraft:is_forest). Empty means any biome.",
+          "default": []
+        },
+        {
+          "name": "group_min",
+          "kind": "integer",
+          "required": false,
+          "description": "The fewest who arrive together.",
+          "min": 1.0,
+          "max": 8.0,
+          "default": 1
+        },
+        {
+          "name": "group_max",
+          "kind": "integer",
+          "required": false,
+          "description": "The most who arrive together.",
+          "min": 1.0,
+          "max": 8.0,
+          "default": 1
+        },
+        {
+          "name": "max_nearby",
+          "kind": "integer",
+          "required": false,
+          "description": "How many of her may be around before no more are spawned. Counted in a wide area; tamed girls are not counted.",
+          "min": 1.0,
+          "max": 32.0,
+          "default": 2
+        },
+        {
+          "name": "time",
+          "kind": "choice",
+          "required": false,
+          "description": "When she appears.",
+          "options": [
+            "any",
+            "day",
+            "night"
+          ],
+          "default": "any"
+        },
+        {
+          "name": "min_y",
+          "kind": "integer",
+          "required": false,
+          "description": "The lowest height she spawns at.",
+          "min": -64.0,
+          "max": 320.0,
+          "default": -64
+        },
+        {
+          "name": "max_y",
+          "kind": "integer",
+          "required": false,
+          "description": "The highest height she spawns at.",
+          "min": -64.0,
+          "max": 320.0,
+          "default": 320
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:merchant": {
+      "description": "How a travelling merchant visits, stands about and undresses as she gets to know a player.",
+      "required": false,
+      "fields": [
+        {
+          "name": "visit_weight",
+          "kind": "integer",
+          "required": false,
+          "description": "How likely she is to be the merchant who calls, against the other merchants. 0 means she never visits by herself.",
+          "min": 0.0,
+          "max": 1000.0,
+          "default": 1
+        },
+        {
+          "name": "wander_speed",
+          "kind": "number",
+          "required": false,
+          "description": "How fast she wanders about while she waits, as a multiple of her speed.",
+          "min": 0.1,
+          "max": 4.0,
+          "default": 0.6
+        },
+        {
+          "name": "look_range",
+          "kind": "number",
+          "required": false,
+          "description": "How close a player must be for her to look at them.",
+          "min": 1.0,
+          "max": 64.0,
+          "default": 8.0
+        },
+        {
+          "name": "shirt_at",
+          "kind": "integer",
+          "required": false,
+          "description": "The affection at which her cloak comes off.",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 3
+        },
+        {
+          "name": "underwear_at",
+          "kind": "integer",
+          "required": false,
+          "description": "The affection at which the outfit under her cloak comes off.",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 6
+        },
+        {
+          "name": "bare_at",
+          "kind": "integer",
+          "required": false,
+          "description": "The affection at which nothing is left.",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 9
+        },
+        {
+          "name": "cloak_bones",
+          "kind": "object",
+          "required": false,
+          "description": "The outermost layer of her model, hidden once she is comfortable. Only the outermost bone of each piece is needed.",
+          "default": []
+        },
+        {
+          "name": "shirt_bones",
+          "kind": "object",
+          "required": false,
+          "description": "The outfit under the cloak, hidden at the next stage. Only the outermost bone of each piece is needed.",
+          "default": []
+        },
+        {
+          "name": "skirt_back_bones",
+          "kind": "object",
+          "required": false,
+          "description": "The back of the skirt: hidden under the cloak, shown once the cloak is off, and gone again with the shirt. Only the outermost bone of each piece is needed.",
+          "default": []
+        },
+        {
+          "name": "bare_bones",
+          "kind": "object",
+          "required": false,
+          "description": "The bare legs: hidden while the cloak or the shirt covers them, shown once neither does. Only the outermost bone of each piece is needed.",
+          "default": []
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:chest": {
+      "description": "Lets her carry a chest that a player can fill. Leave it out for a girl who cannot.",
+      "required": false,
+      "fields": [
+        {
+          "name": "bone",
+          "kind": "text",
+          "required": false,
+          "description": "The model bone that shows the chest while she carries it.",
+          "default": "chest"
+        },
+        {
+          "name": "clip_prefix",
+          "kind": "text",
+          "required": false,
+          "description": "What goes in front of an everyday clip's name (idle, walk, run, fly) while she carries the chest, when her animation file has that clip.",
+          "default": "has_chest_"
+        },
+        {
+          "name": "hides_held_item",
+          "kind": "boolean",
+          "required": false,
+          "description": "Whether the item in her hand is hidden while she carries the chest.",
+          "default": true
+        }
+      ]
+    },
+    "pleasurehorizons:display": {
+      "description": "How she is drawn day to day: her standing clip, whether she shows a held item, and a part her owner can hide.",
+      "required": false,
+      "fields": [
+        {
+          "name": "idle_clip",
+          "kind": "text",
+          "required": false,
+          "description": "The clip she plays when she stands still on the ground.",
+          "default": "idle"
+        },
+        {
+          "name": "shows_held_item",
+          "kind": "boolean",
+          "required": false,
+          "description": "Whether the item in her hand is drawn on her.",
+          "default": true
+        },
+        {
+          "name": "hideable_part",
+          "kind": "text",
+          "required": false,
+          "description": "A model bone her owner can hide or show with the girl staff. Empty for none.",
+          "default": ""
+        },
+        {
+          "name": "hideable_label",
+          "kind": "text",
+          "required": false,
+          "description": "What the staff button calls that part: it reads Disable Part or Enable Part.",
+          "default": "Part"
+        },
+        {
+          "name": "render_mode",
+          "kind": "choice",
+          "required": false,
+          "description": "How her body is drawn. translucent is the usual. cutout is for a rig of stacked planes (a head with hair and horns) that shows through itself translucent; use translucent_bones for a soft patch on it.",
+          "options": [
+            "translucent",
+            "cutout"
+          ],
+          "default": "translucent"
+        },
+        {
+          "name": "translucent_bones",
+          "kind": "object",
+          "required": false,
+          "description": "Bones drawn blended even when her body is cutout, for a soft painted patch such as a blush.",
+          "default": []
+        },
+        {
+          "name": "leash_offset",
+          "kind": "vec3",
+          "required": false,
+          "description": "Added to where a leash meets her: [x sideways, y up, z forward].",
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "default": {}
+    },
+    "pleasurehorizons:look": {
+      "description": "What can differ from girl to girl of this kind: picks, colours, sliders and switches, each working on bones of her model, with random values for a new girl and a customise screen.",
+      "required": true,
+      "fields": [
+        {
+          "name": "options",
+          "kind": "object",
+          "required": false,
+          "description": "What can differ from girl to girl. Each is { \"type\": \"choice\" | \"colours\" | \"slider\" | \"flag\", \"id\": \"...\", ... }: a choice has variants (a label and the bones it shows), colours have slots (the bones each tints) and presets, a slider has min, max, default and effects (bone_scale, bone_offset, max_health, body_scale), a flag has the bones it shows."
+        },
+        {
+          "name": "plain_bones",
+          "kind": "object",
+          "required": false,
+          "description": "Bones kept white, so their own painted colours show.",
+          "default": []
+        },
+        {
+          "name": "scene_bones",
+          "kind": "object",
+          "required": false,
+          "description": "Bones shown only while a scene is running.",
+          "default": []
+        }
+      ]
+    },
+    "pleasurehorizons:encounter": {
+      "description": "Lets a clan send her to raid a settlement, and lets her be taken captive, held in a Stockade and sign on. Needs the kobold brain preset to act.",
+      "required": true,
+      "fields": [
+        {
+          "name": "min_recruit_trust",
+          "kind": "integer",
+          "required": false,
+          "description": "The trust a captive must have before she can sign on to the settlement.",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 25
+        },
+        {
+          "name": "max_recruit_fear",
+          "kind": "integer",
+          "required": false,
+          "description": "The most fear a captive can have and still sign on.",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 50
+        },
+        {
+          "name": "required_custody_days",
+          "kind": "integer",
+          "required": false,
+          "description": "How many days she must be held in a secured Stockade (tied to a post, with a guard) before she can sign on.",
+          "min": 0.0,
+          "max": 100.0,
+          "default": 2
+        }
+      ]
+    },
+    "pleasurehorizons:worker": {
+      "description": "Lets a wild girl join a settlement and work there. Leave it out for a girl who cannot.",
+      "required": true,
+      "fields": [
+        {
+          "name": "jobs",
+          "kind": "object",
+          "required": false,
+          "description": "The jobs she may be given in a settlement, by name. Only mineworker can be done by a girl who is not a settler.",
+          "default": [
+            "mineworker"
+          ]
+        }
+      ]
+    }
+  },
+  "archetypes": {
+    "pleasurehorizons:settler": [
+      "pleasurehorizons:body",
+      "pleasurehorizons:identity",
+      "pleasurehorizons:taste"
+    ],
+    "pleasurehorizons:merchant": [
+      "pleasurehorizons:body",
+      "pleasurehorizons:identity",
+      "pleasurehorizons:taste"
+    ],
+    "pleasurehorizons:wild": [
+      "pleasurehorizons:body",
+      "pleasurehorizons:identity",
+      "pleasurehorizons:taste"
+    ]
+  },
+  "ai": {
+    "trait_capabilities": {
+      "movement": {
+        "category": "movement",
+        "description": "How she gets around: ground, flying or flying_walks_indoors.",
+        "kind": "movement",
+        "options": [
+          "ground",
+          "flying",
+          "flying_walks_indoors"
+        ]
+      },
+      "fall_damage": {
+        "category": "movement",
+        "description": "Whether a fall hurts her.",
+        "kind": "boolean"
+      },
+      "accepts_collar": {
+        "category": "interaction",
+        "description": "Whether a player can put a collar on her.",
+        "kind": "boolean"
+      },
+      "can_be_tamed": {
+        "category": "interaction",
+        "description": "Whether the Girl Staff can tame her.",
+        "kind": "boolean"
+      },
+      "takes_gifts": {
+        "category": "interaction",
+        "description": "Whether gifts raise her affection and right-click opens her scene menu.",
+        "kind": "boolean"
+      },
+      "loadout": {
+        "category": "loadout",
+        "description": "The loot table her weapons and armour are drawn from when she is first spawned, such as mypack:loadouts/bandit. Empty for none.",
+        "kind": "identifier"
+      }
+    },
+    "trait_categories": {
+      "movement": {
+        "description": "How she gets around: on foot, flying or swimming.",
+        "several": false,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:walker"
+          ]
+        }
+      },
+      "temperament": {
+        "description": "How she meets strangers and trouble: hostile, skittish, docile or only defending herself.",
+        "several": false,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:defensive"
+          ],
+          "brain": [
+            "pleasurehorizons:defensive"
+          ]
+        }
+      },
+      "combat": {
+        "description": "How she fights.",
+        "several": false,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:brawler"
+          ]
+        }
+      },
+      "loadout": {
+        "description": "What she spawns with: weapons and armour, drawn from a loot table.",
+        "several": false,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:unequipped"
+          ]
+        }
+      },
+      "interaction": {
+        "description": "What a player can do with her: tame her, give her gifts, put a collar on her, tell her to sit or follow, talk to her.",
+        "several": true,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:tameable",
+            "pleasurehorizons:affectionate",
+            "pleasurehorizons:collar"
+          ],
+          "brain": [
+            "pleasurehorizons:social"
+          ]
+        }
+      },
+      "routine": {
+        "description": "How her day goes: when she sleeps and what she does while she is idle.",
+        "several": false,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:sleeper"
+          ],
+          "brain": [
+            "pleasurehorizons:diurnal"
+          ]
+        }
+      },
+      "territory": {
+        "description": "Where she stays: anywhere, or near a home or settlement.",
+        "several": false,
+        "defaults": {
+          "goals": [
+            "pleasurehorizons:roamer"
+          ],
+          "brain": [
+            "pleasurehorizons:resident"
+          ]
+        }
+      },
+      "work": {
+        "description": "Whether a settler does the work of her settlement.",
+        "several": false,
+        "defaults": {
+          "brain": [
+            "pleasurehorizons:worker"
+          ]
+        }
+      }
+    },
+    "traits": {
+      "pleasurehorizons:affectionate": {
+        "category": "interaction",
+        "description": "Gifts of the item she likes raise her affection, and right-clicking her opens her scene menu. A girl without this trait has no gifts and no menu for strangers.",
+        "params": [],
+        "capabilities": {
+          "takes_gifts": true
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:aloof": {
+        "category": "interaction",
+        "description": "A settler keeps to herself: she does not ask anyone to bed. She still talks and follows her contract holder.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [
+            "pleasurehorizons:propose_intimacy"
+          ],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:archer": {
+        "category": "combat",
+        "description": "She shoots with a bow when she holds one and fights up close when she has none. She needs a bow from her loadout, such as archer_kit.",
+        "params": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she moves while she fights, as a multiple of her speed."
+          },
+          {
+            "name": "min_range",
+            "kind": "number",
+            "default": 5.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How close a target gets before she backs away when she is hurt."
+          },
+          {
+            "name": "max_range",
+            "kind": "number",
+            "default": 15.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How far a target gets before she closes in when she is hurt."
+          },
+          {
+            "name": "cooldown_ticks",
+            "kind": "integer",
+            "default": 30,
+            "min": 0.0,
+            "max": 400.0,
+            "description": "The pause between shots, in ticks."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:archer_kit": {
+        "category": "loadout",
+        "description": "She spawns with a stone sword and a bow, from the loot table pleasurehorizons:loadouts/archer_kit.",
+        "params": [],
+        "capabilities": {
+          "loadout": "pleasurehorizons:loadouts/archer_kit"
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:bee_flier": {
+        "category": "movement",
+        "description": "The bee girl's way of moving: she flies in the open, and where a roof is close above (a house, a cave) she lands and walks instead. Her animation file needs the flying clips and the walking ones.",
+        "params": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she flies, as a multiple of her speed."
+          },
+          {
+            "name": "radius",
+            "kind": "number",
+            "default": 15.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How far from where she started she drifts."
+          }
+        ],
+        "capabilities": {
+          "movement": "flying_walks_indoors",
+          "fall_damage": false
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:brawler": {
+        "category": "combat",
+        "description": "She fights up close.",
+        "params": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she closes in on her target, as a multiple of her speed."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:collar": {
+        "category": "interaction",
+        "description": "A player can put a collar on her, dye it and take it off with shears.",
+        "params": [],
+        "capabilities": {
+          "accepts_collar": true
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:curious": {
+        "category": "interaction",
+        "description": "She turns to watch a player who comes near, and follows one who holds out the item she likes, though she is nobody's.",
+        "params": [
+          {
+            "name": "look_range",
+            "kind": "number",
+            "default": 8.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How close a player must be for her to look at them."
+          },
+          {
+            "name": "follow_speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she follows a player holding her item, as a multiple of her speed."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:defensive": {
+        "category": "temperament",
+        "description": "She leaves players alone and fights back against whoever hurts her.",
+        "params": [
+          {
+            "name": "spares_girls",
+            "kind": "boolean",
+            "default": true,
+            "description": "Whether she leaves other girls alone when they hurt her."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals",
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:diurnal": {
+        "category": "routine",
+        "description": "A settler works by day and rests at night, as the settlement expects.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:docile": {
+        "category": "temperament",
+        "description": "She never fights: she does not attack and does not fight back.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "goals",
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [
+            "pleasurehorizons:target_or_retaliate"
+          ],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:flier": {
+        "category": "movement",
+        "description": "She flies: she drifts about, hovers, follows her owner through the air and never takes fall damage. Her animation file needs fly and float_idle clips.",
+        "params": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she flies, as a multiple of her speed."
+          },
+          {
+            "name": "radius",
+            "kind": "number",
+            "default": 15.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How far from where she started she drifts."
+          }
+        ],
+        "capabilities": {
+          "movement": "flying",
+          "fall_damage": false
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:homebody": {
+        "category": "territory",
+        "description": "She keeps near the bed she has claimed and flies back to it when she strays, and is drawn to chests. For a girl who flies.",
+        "params": [
+          {
+            "name": "radius",
+            "kind": "number",
+            "default": 15.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How far from home she goes."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:hostile": {
+        "category": "temperament",
+        "description": "She attacks players she sees and chases them, and fights back against whoever hurts her. She spares her owner and, once tamed, every player. A player who holds out the item she likes, or whom she is fond enough of, is spared too, which is how a hostile girl is won over.",
+        "params": [
+          {
+            "name": "calmed_by_item",
+            "kind": "boolean",
+            "default": true,
+            "description": "Whether she leaves alone a player who holds out the item she likes."
+          },
+          {
+            "name": "fond_percent",
+            "kind": "integer",
+            "default": 50,
+            "min": 0.0,
+            "max": 100.0,
+            "description": "She leaves alone a player once her affection is at least this percent of the most it can be. 0 means affection never spares anyone."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:idler": {
+        "category": "work",
+        "description": "A settler does no work: she is in the settlement but never takes a job.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [
+            "work"
+          ],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:insomniac": {
+        "category": "routine",
+        "description": "She never sleeps: she is awake day and night, looking about and at players who come near.",
+        "params": [
+          {
+            "name": "look_range",
+            "kind": "number",
+            "default": 6.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How close a player must be for her to look at them."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:long_shift": {
+        "category": "routine",
+        "description": "A settler works through the day and well into the evening, and rests later than the settlement does.",
+        "params": [
+          {
+            "name": "work_starts",
+            "kind": "integer",
+            "default": 0,
+            "min": 0,
+            "max": 23999,
+            "description": "The tick of the day she starts work (0 is dawn)."
+          },
+          {
+            "name": "rest_starts",
+            "kind": "integer",
+            "default": 15000,
+            "min": 0,
+            "max": 23999,
+            "description": "The tick of the day she goes to bed (12000 is dusk)."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {
+            "work": "$work_starts",
+            "rest": "$rest_starts"
+          }
+        }
+      },
+      "pleasurehorizons:loot": {
+        "category": "loadout",
+        "description": "She spawns with whatever a loot table of your own gives her. Name it in the table setting: armour goes to its slot, the first other item in her main hand and the second in her off hand.",
+        "params": [
+          {
+            "name": "table",
+            "kind": "identifier",
+            "default": "",
+            "description": "The loot table, such as mypack:loadouts/bandit. Empty means nothing."
+          }
+        ],
+        "capabilities": {
+          "loadout": "$table"
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:nocturnal": {
+        "category": "routine",
+        "description": "A settler works by night and rests by day.",
+        "params": [
+          {
+            "name": "work_starts",
+            "kind": "integer",
+            "default": 12000,
+            "min": 0.0,
+            "max": 23999.0,
+            "description": "The tick of the day she starts work (12000 is dusk)."
+          },
+          {
+            "name": "rest_starts",
+            "kind": "integer",
+            "default": 0,
+            "min": 0.0,
+            "max": 23999.0,
+            "description": "The tick of the day she goes to bed (0 is dawn)."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {
+            "work": "$work_starts",
+            "rest": "$rest_starts"
+          }
+        }
+      },
+      "pleasurehorizons:raider": {
+        "category": "loadout",
+        "description": "She spawns with a stone or iron sword, a bow and some armour of mixed kinds, drawn from the loot table pleasurehorizons:loadouts/raider.",
+        "params": [],
+        "capabilities": {
+          "loadout": "pleasurehorizons:loadouts/raider"
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:resident": {
+        "category": "territory",
+        "description": "A settler stays near her settlement and comes back when she strays.",
+        "params": [
+          {
+            "name": "slack",
+            "kind": "number",
+            "default": 2.0,
+            "min": 0.0,
+            "max": 64.0,
+            "description": "How far past the edge she may wander before she turns back."
+          },
+          {
+            "name": "walk_speed",
+            "kind": "number",
+            "default": 1.2,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she walks back."
+          },
+          {
+            "name": "arrival_range",
+            "kind": "integer",
+            "default": 6,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How close to the settlement she gets before she stops."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {
+            "stay_near_settlement": {
+              "slack": "$slack",
+              "walk_speed": "$walk_speed",
+              "arrival_range": "$arrival_range"
+            }
+          },
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:roamer": {
+        "category": "territory",
+        "description": "She goes wherever she likes.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "goals",
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:skittish": {
+        "category": "temperament",
+        "description": "She is shy: she runs from a player who comes close, unless they sneak up on her slowly or hold out the item she likes. A tamed girl does not run.",
+        "params": [
+          {
+            "name": "distance",
+            "kind": "number",
+            "default": 12.0,
+            "min": 2.0,
+            "max": 64.0,
+            "description": "How close a player gets before she runs."
+          },
+          {
+            "name": "sneak_distance",
+            "kind": "number",
+            "default": 3.0,
+            "min": 0.0,
+            "max": 64.0,
+            "description": "How close a player who is sneaking gets before she notices them."
+          },
+          {
+            "name": "speed",
+            "kind": "number",
+            "default": 1.3,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she runs, as a multiple of her speed."
+          },
+          {
+            "name": "calmed_by_item",
+            "kind": "boolean",
+            "default": true,
+            "description": "Whether a player holding out the item she likes does not scare her."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:sleeper": {
+        "category": "routine",
+        "description": "She sleeps in a bed when it is time, and looks about and at players while she is free.",
+        "params": [
+          {
+            "name": "look_range",
+            "kind": "number",
+            "default": 6.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How close a player must be for her to look at them."
+          }
+        ],
+        "capabilities": {},
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:social": {
+        "category": "interaction",
+        "description": "A settler talks to the player, can be asked to bed and follows the one she is contracted to.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:stationary": {
+        "category": "movement",
+        "description": "She stays where she is: she swims up out of water, opens doors and runs from fire, but never wanders off. For a shopkeeper, a guard or anyone who has a post.",
+        "params": [
+          {
+            "name": "fall_damage",
+            "kind": "boolean",
+            "default": true,
+            "description": "Whether a fall hurts her."
+          }
+        ],
+        "capabilities": {
+          "movement": "ground",
+          "fall_damage": "$fall_damage"
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:tameable": {
+        "category": "interaction",
+        "description": "The Girl Staff can tame her once her affection is full. Tamed, she follows her owner, sits when told and fights for them. Without this trait the staff refuses her.",
+        "params": [
+          {
+            "name": "tempt_speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she follows a player holding what she likes."
+          },
+          {
+            "name": "follow_start",
+            "kind": "number",
+            "default": 10.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How far from her owner she is before she starts to follow."
+          },
+          {
+            "name": "follow_stop",
+            "kind": "number",
+            "default": 2.0,
+            "min": 1.0,
+            "max": 64.0,
+            "description": "How close to her owner she gets before she stops."
+          }
+        ],
+        "capabilities": {
+          "can_be_tamed": true
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:unequipped": {
+        "category": "loadout",
+        "description": "She spawns with nothing.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "goals",
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:walker": {
+        "category": "movement",
+        "description": "She gets around on foot: swims when she is in water, opens doors, runs from fire and wanders about.",
+        "params": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "default": 1.0,
+            "min": 0.1,
+            "max": 4.0,
+            "description": "How fast she wanders, as a multiple of her speed."
+          },
+          {
+            "name": "fall_damage",
+            "kind": "boolean",
+            "default": true,
+            "description": "Whether a fall hurts her."
+          }
+        ],
+        "capabilities": {
+          "movement": "ground",
+          "fall_damage": "$fall_damage"
+        },
+        "stacks": [
+          "goals"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      },
+      "pleasurehorizons:worker": {
+        "category": "work",
+        "description": "A settler does the work of her settlement, whatever her job is.",
+        "params": [],
+        "capabilities": {},
+        "stacks": [
+          "brain"
+        ],
+        "brain": {
+          "removes_behaviours": [],
+          "removes_activities": [],
+          "settings": {},
+          "add": [],
+          "schedule": {}
+        }
+      }
+    },
+    "behaviours": {
+      "pleasurehorizons:float_to_surface": {
+        "description": "Swims up when she is in water or lava.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:panic_on_fire": {
+        "description": "Runs when she is on fire or stuck in powder snow.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:hold_conversation": {
+        "description": "Stands still and listens while a player talks to her.",
+        "for": "SettlementGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:wait_for_delivery": {
+        "description": "Waits for a hauler to hand her what she asked for.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:guard_stockade": {
+        "description": "Keeps watch inside a stockade when she is a guard assigned to one.",
+        "for": "SettlementGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:follow_to_bed": {
+        "description": "Goes to a bed she has agreed to go to with the player.",
+        "for": "SettlementGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:look_at_target": {
+        "description": "Turns her head towards what she is looking at.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:move_to_walk_target": {
+        "description": "Walks to where she has decided to go.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:interact_with_door": {
+        "description": "Opens a door that is on her path.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:target_or_retaliate": {
+        "description": "Picks a target to fight back against when she is hurt.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:set_player_look_target": {
+        "description": "Looks at a player who is close.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:set_random_look_target": {
+        "description": "Looks about at random.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:stay_near_settlement": {
+        "description": "Walks her back inside her settlement's border once she has strayed outside it.",
+        "for": "GirlSceneEntity",
+        "fields": [
+          {
+            "name": "slack",
+            "kind": "number",
+            "required": false,
+            "description": "How far outside the settlement's border she may be before she is steered back.",
+            "min": 0.0,
+            "max": 64.0,
+            "default": 2.0
+          },
+          {
+            "name": "walk_speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she walks back.",
+            "min": 0.10000000149011612,
+            "max": 3.0,
+            "default": 1.2
+          },
+          {
+            "name": "arrival_range",
+            "kind": "integer",
+            "required": false,
+            "description": "How close to the centre she gets before she lets go.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 6
+          }
+        ]
+      },
+      "pleasurehorizons:set_random_walk_target": {
+        "description": "Picks a place nearby to wander to. Settings: radius (blocks), speed.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:idle": {
+        "description": "Stands still for a moment.",
+        "for": "GirlSceneEntity",
+        "fields": [
+          {
+            "name": "min_ticks",
+            "kind": "integer",
+            "required": false,
+            "description": "The shortest she stands still, in ticks.",
+            "min": 1.0,
+            "max": 6000.0,
+            "default": 20
+          },
+          {
+            "name": "max_ticks",
+            "kind": "integer",
+            "required": false,
+            "description": "The longest she stands still, in ticks.",
+            "min": 1.0,
+            "max": 6000.0,
+            "default": 30
+          }
+        ]
+      },
+      "pleasurehorizons:leave_settlement": {
+        "description": "A traveller whose visit is over walks out of the area to despawn.",
+        "for": "SettlementGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:eat_from_storage": {
+        "description": "Walks to a storage building and eats.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:deliver_supplies": {
+        "description": "Carries supplies to a settler who is waiting for them.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:haul_to_storage": {
+        "description": "Hauls goods to storage.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:tend_farm_plots": {
+        "description": "Tends the farm plots of a farmer's job.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:fish_the_water": {
+        "description": "Fishes, for a fisher.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:work_the_mine": {
+        "description": "Works the mine, for a miner.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:collect_supplies": {
+        "description": "Fetches her own supplies when her work has stopped for want of something.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:go_to_workstation": {
+        "description": "Walks to her workstation.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:forge_orders": {
+        "description": "Works through forge orders at her station.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:work_at_station": {
+        "description": "Does her job at her workstation.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:return_supplies": {
+        "description": "Puts spare inputs back in storage.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:go_to_bed_and_sleep": {
+        "description": "Walks to her claimed bed and sleeps.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:propose_intimacy": {
+        "description": "Crosses the settlement to ask a player of her own accord.",
+        "for": "SettlementGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:follow_contract_holder": {
+        "description": "Follows the player who holds her contract.",
+        "for": "SettlementGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:kobold_settlement_commute": {
+        "description": "Travels between her camp and the settlement she raids or has joined.",
+        "for": "a girl with the encounter component",
+        "fields": []
+      },
+      "pleasurehorizons:escort_encounter_captive": {
+        "description": "Leads a captive girl she has taken.",
+        "for": "a girl with the encounter component",
+        "fields": []
+      },
+      "pleasurehorizons:raid_settlement_storage": {
+        "description": "Raids a settlement's storage.",
+        "for": "a girl with the encounter component",
+        "fields": []
+      },
+      "pleasurehorizons:invalidate_attack_target": {
+        "description": "Drops a target that is gone or no longer valid.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:set_walk_target_to_attack_target": {
+        "description": "Walks towards her target.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:animatable_melee_attack": {
+        "description": "Swings at her target with the attack animation.",
+        "for": "GirlSceneEntity",
+        "fields": [
+          {
+            "name": "delay_ticks",
+            "kind": "integer",
+            "required": false,
+            "description": "Ticks of wind up before the swing lands.",
+            "min": 0.0,
+            "max": 100.0,
+            "default": 0
+          }
+        ]
+      }
+    },
+    "sensors": {
+      "pleasurehorizons:nearby_living_entities": {
+        "description": "Notices players, iron golems, wolves and baby turtles nearby.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:hurt_by": {
+        "description": "Remembers who hurt her.",
+        "for": "GirlSceneEntity",
+        "fields": []
+      },
+      "pleasurehorizons:nearby_raid_targets": {
+        "description": "Notices what a kobold attacks in a raid.",
+        "for": "a girl with the encounter component",
+        "fields": []
+      }
+    },
+    "goals": {
+      "pleasurehorizons:swim": {
+        "description": "Swims up when she is in water.",
+        "for": "WildGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:sit": {
+        "description": "Sits when she has been told to.",
+        "for": "WildGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:long_door_interact": {
+        "description": "Opens and closes doors on her way.",
+        "for": "WildGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:attack_with_owner": {
+        "description": "Attacks what her owner attacks.",
+        "for": "WildGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:look_around": {
+        "description": "Looks about at random.",
+        "for": "WildGirlEntity",
+        "fields": []
+      },
+      "pleasurehorizons:tempt": {
+        "description": "Follows a player holding an item she likes: her favourite one, or the one named in \"item\".",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she follows.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          },
+          {
+            "name": "item",
+            "kind": "item",
+            "required": false,
+            "description": "The item she follows. Leave it out for her favourite one."
+          }
+        ]
+      },
+      "pleasurehorizons:revenge": {
+        "description": "Fights back against whoever hurt her.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "spares_girls",
+            "kind": "boolean",
+            "required": false,
+            "description": "Whether she leaves other girls alone when they hurt her.",
+            "default": true
+          }
+        ]
+      },
+      "pleasurehorizons:fly_follow_owner": {
+        "description": "Flies after her owner and stays close. Only for a girl who flies.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she flies for this goal.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          },
+          {
+            "name": "start_distance",
+            "kind": "number",
+            "required": false,
+            "description": "How far from her owner she is before she follows.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 5.0
+          },
+          {
+            "name": "stop_distance",
+            "kind": "number",
+            "required": false,
+            "description": "How close to her owner she gets.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 2.0
+          }
+        ]
+      },
+      "pleasurehorizons:fly_return_home": {
+        "description": "Flies back to her claimed bed when she has strayed too far. Only for a girl who flies.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she flies for this goal.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.2
+          },
+          {
+            "name": "radius",
+            "kind": "number",
+            "required": false,
+            "description": "How far from her home she goes.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 15.0
+          }
+        ]
+      },
+      "pleasurehorizons:fly_wander": {
+        "description": "Drifts about near her claimed bed, hovering now and then. Only for a girl who flies.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she flies for this goal.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          },
+          {
+            "name": "radius",
+            "kind": "number",
+            "required": false,
+            "description": "How far from her home she goes.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 15.0
+          }
+        ]
+      },
+      "pleasurehorizons:sleep_in_bed": {
+        "description": "Goes to a bed and sleeps when it is time.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she moves for this goal, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          }
+        ]
+      },
+      "pleasurehorizons:melee_attack": {
+        "description": "Fights her target up close.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she moves for this goal, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          }
+        ]
+      },
+      "pleasurehorizons:wander": {
+        "description": "Wanders about.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she moves for this goal, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          }
+        ]
+      },
+      "pleasurehorizons:escape_danger": {
+        "description": "Runs from fire and the like.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she moves for this goal, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.5
+          }
+        ]
+      },
+      "pleasurehorizons:follow_owner": {
+        "description": "Follows her owner.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she moves for this goal, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          },
+          {
+            "name": "start_distance",
+            "kind": "number",
+            "required": false,
+            "description": "How far from her owner she is before she starts to follow.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 10.0
+          },
+          {
+            "name": "stop_distance",
+            "kind": "number",
+            "required": false,
+            "description": "How close to her owner she gets before she stops.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 2.0
+          }
+        ]
+      },
+      "pleasurehorizons:look_at_player": {
+        "description": "Looks at a player who is close.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "range",
+            "kind": "number",
+            "required": false,
+            "description": "How close a player must be for her to look at them.",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 6.0
+          }
+        ]
+      },
+      "pleasurehorizons:bow_attack": {
+        "description": "Shoots her target with a bow when she is holding one, and keeps her distance when she is hurt.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she moves while she shoots, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.0
+          },
+          {
+            "name": "min_range",
+            "kind": "number",
+            "required": false,
+            "description": "How close a target gets before she backs away (when she is hurt or has no weapon).",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 5.0
+          },
+          {
+            "name": "max_range",
+            "kind": "number",
+            "required": false,
+            "description": "How far a target gets before she closes in (when she is hurt or has no weapon).",
+            "min": 1.0,
+            "max": 64.0,
+            "default": 15.0
+          },
+          {
+            "name": "cooldown_ticks",
+            "kind": "integer",
+            "required": false,
+            "description": "The pause between shots, in ticks.",
+            "min": 0.0,
+            "max": 400.0,
+            "default": 30
+          }
+        ]
+      },
+      "pleasurehorizons:flee_players": {
+        "description": "Runs from a player who comes close, unless they are sneaking up on her or holding out the item she likes. Put \"when\": \"untamed\" on it to leave her owner alone.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "distance",
+            "kind": "number",
+            "required": false,
+            "description": "How close a player gets before she runs.",
+            "min": 2.0,
+            "max": 64.0,
+            "default": 12.0
+          },
+          {
+            "name": "sneak_distance",
+            "kind": "number",
+            "required": false,
+            "description": "How close a player who is sneaking gets before she notices them. A player sneaking up slowly can get this close.",
+            "min": 0.0,
+            "max": 64.0,
+            "default": 3.0
+          },
+          {
+            "name": "speed",
+            "kind": "number",
+            "required": false,
+            "description": "How fast she runs, as a multiple of her speed.",
+            "min": 0.1,
+            "max": 4.0,
+            "default": 1.3
+          },
+          {
+            "name": "calmed_by_item",
+            "kind": "boolean",
+            "required": false,
+            "description": "Whether a player holding out the item she likes does not scare her.",
+            "default": true
+          }
+        ]
+      },
+      "pleasurehorizons:target_players": {
+        "description": "Picks a player as her target, except her owner, one holding out the item she likes and one she is fond of enough. Put \"when\": \"untamed\" on it to leave every player alone once she is tamed.",
+        "for": "WildGirlEntity",
+        "fields": [
+          {
+            "name": "spare_when_holding_item",
+            "kind": "boolean",
+            "required": false,
+            "description": "Whether she leaves alone a player who holds out the item she likes.",
+            "default": true
+          },
+          {
+            "name": "spare_fond_percent",
+            "kind": "integer",
+            "required": false,
+            "description": "She leaves alone a player once her affection is at least this percent of the most it can be. 0 means affection never spares anyone.",
+            "min": 0.0,
+            "max": 100.0,
+            "default": 50
+          }
+        ]
+      }
+    },
+    "brain_conditions": {
+      "pleasurehorizons:kobold_unrestrained": "She is awake and not held by a capture order.",
+      "pleasurehorizons:kobold_roaming": "She is awake and free, and if she belongs to a settlement it is day."
+    },
+    "goal_conditions": {
+      "pleasurehorizons:following_and_tamed": "She is tamed and has been told to follow.",
+      "pleasurehorizons:following_tamed_and_awake": "She is tamed, has been told to follow, and is awake.",
+      "pleasurehorizons:untamed": "She has no owner.",
+      "pleasurehorizons:tamed": "She has an owner.",
+      "pleasurehorizons:not_sleeping": "She is awake.",
+      "pleasurehorizons:free_and_awake": "She is awake and nothing is holding her still."
+    },
+    "presets": {
+      "brain": {
+        "pleasurehorizons:kobold": {
+          "core": [
+            {
+              "type": "pleasurehorizons:float_to_surface",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:look_at_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:wait_for_delivery",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:move_to_walk_target",
+              "settings": {}
+            }
+          ],
+          "idle": [
+            {
+              "type": "pleasurehorizons:kobold_settlement_commute",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:escort_encounter_captive",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:target_or_retaliate",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:raid_settlement_storage",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:eat_from_storage",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:go_to_bed_and_sleep",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:work_the_mine",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_player_look_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_random_look_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_random_walk_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:idle",
+              "settings": {
+                "max_ticks": 40
+              }
+            }
+          ],
+          "fight": [
+            {
+              "type": "pleasurehorizons:invalidate_attack_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_walk_target_to_attack_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:animatable_melee_attack",
+              "settings": {}
+            }
+          ],
+          "activities": {}
+        },
+        "pleasurehorizons:settler": {
+          "core": [
+            {
+              "type": "pleasurehorizons:float_to_surface",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:panic_on_fire",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:hold_conversation",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:wait_for_delivery",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:guard_stockade",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:follow_to_bed",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:look_at_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:move_to_walk_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:interact_with_door",
+              "settings": {}
+            }
+          ],
+          "idle": [
+            {
+              "type": "pleasurehorizons:target_or_retaliate",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_player_look_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_random_look_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:stay_near_settlement",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:set_random_walk_target",
+              "settings": {}
+            },
+            {
+              "type": "pleasurehorizons:idle",
+              "settings": {}
+            }
+          ],
+          "fight": [],
+          "activities": {
+            "leaving": [
+              {
+                "type": "pleasurehorizons:leave_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ],
+            "visiting": [
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ],
+            "needs": [
+              {
+                "type": "pleasurehorizons:eat_from_storage",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ],
+            "work": [
+              {
+                "type": "pleasurehorizons:deliver_supplies",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:haul_to_storage",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:tend_farm_plots",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:fish_the_water",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:work_the_mine",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:collect_supplies",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:go_to_workstation",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:forge_orders",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:work_at_station",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:return_supplies",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ],
+            "rest": [
+              {
+                "type": "pleasurehorizons:go_to_bed_and_sleep",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ],
+            "social": [
+              {
+                "type": "pleasurehorizons:propose_intimacy",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ],
+            "commanded": [
+              {
+                "type": "pleasurehorizons:follow_contract_holder",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:stay_near_settlement",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:set_random_walk_target",
+                "settings": {}
+              },
+              {
+                "type": "pleasurehorizons:idle",
+                "settings": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scene": {
+    "fields": [
+      {
+        "name": "display_name",
+        "kind": "text",
+        "description": "The scene's name, as a language key such as scene.pleasurehorizons.missionary."
+      },
+      {
+        "name": "type",
+        "kind": "choice",
+        "options": [
+          "on_player",
+          "on_bed",
+          "stationary_contact",
+          "stationary_intro",
+          "stationary",
+          "downed",
+          "player_downed",
+          "player_animation"
+        ],
+        "description": "Where and how the scene is played."
+      },
+      {
+        "name": "requires_affection",
+        "kind": "integer",
+        "min": 0,
+        "max": 10,
+        "description": "The affection a girl needs before she agrees."
+      },
+      {
+        "name": "cum_threshold",
+        "kind": "number",
+        "min": 0,
+        "max": 1000,
+        "description": "How far along the scene must be before it can end."
+      },
+      {
+        "name": "needs_to_strip",
+        "kind": "boolean",
+        "description": "Whether the girl is undressed first."
+      },
+      {
+        "name": "counts_towards_impregnation",
+        "kind": "boolean",
+        "description": "Whether the scene can lead to a pregnancy."
+      },
+      {
+        "name": "hide_player",
+        "kind": "boolean",
+        "description": "Whether the player's body is hidden."
+      },
+      {
+        "name": "use_keyframe_events",
+        "kind": "boolean",
+        "description": "Whether the clips' markers play chat lines and sounds."
+      },
+      {
+        "name": "replace_default_animations",
+        "kind": "boolean",
+        "description": "Whether her own scene file replaces the shared one."
+      },
+      {
+        "name": "bed_alignment_offset",
+        "kind": "number",
+        "min": -10,
+        "max": 10,
+        "description": "How far she is moved along the bed."
+      },
+      {
+        "name": "amount_of_loops",
+        "kind": "integer",
+        "min": 0,
+        "max": 100,
+        "description": "How many loops the scene plays."
+      },
+      {
+        "name": "minigame",
+        "kind": "object",
+        "description": "The pace game for this scene: \"classic\" keeps the old hold-the-key bar, or a block of numbers that replaces the feel read from the clips (slow_band, fast_band as [low, high], slow_seconds, fast_seconds, blend_seconds, fill_seconds)."
+      },
+      {
+        "name": "body_types",
+        "kind": "list",
+        "of": "body_type",
+        "description": "The body types the animation fits. Empty means every body."
+      },
+      {
+        "name": "tags",
+        "kind": "list",
+        "of": "taste_tag",
+        "description": "What the scene appeals to."
+      },
+      {
+        "name": "supported_girls",
+        "kind": "list",
+        "of": "girl_id",
+        "description": "Only these girls get the scene. Not with unsupported_girls."
+      },
+      {
+        "name": "unsupported_girls",
+        "kind": "list",
+        "of": "girl_id",
+        "description": "Every girl but these gets the scene. Not with supported_girls."
+      },
+      {
+        "name": "girl_overrides",
+        "kind": "object",
+        "description": "Per girl settings that replace the scene's own, by girl id."
+      }
+    ],
+    "taste_tags": [
+      "food",
+      "nature",
+      "luxury",
+      "work",
+      "adventure",
+      "kind",
+      "bold",
+      "playful",
+      "honest",
+      "calm",
+      "social",
+      "romantic"
+    ]
+  },
+  "trait_file": {
+    "keys": [
+      "category",
+      "description",
+      "params",
+      "goals",
+      "targets",
+      "removes",
+      "capabilities",
+      "stacks",
+      "removes_behaviours",
+      "removes_activities",
+      "settings",
+      "add",
+      "schedule"
+    ]
+  },
+  "cues": {
+    "description": "Every cue name (one dash-separated part of a marker) that the game's own animations fire. A binding for a cue that is in no animation never plays.",
+    "known": [
+      "aftersessionmoan",
+      "ahh",
+      "anal_cumblackscreen",
+      "anal_cumdone",
+      "anal_cummsg2",
+      "anal_fastmsg1",
+      "anal_preparedone",
+      "anal_preparemsg1",
+      "anal_preparemsg2",
+      "anal_slowmsg1",
+      "anal_startmsg1",
+      "anal_startmsg2",
+      "analfastrapid",
+      "analintromsg1",
+      "analintromsg2",
+      "analintromsg3",
+      "attackdone",
+      "attacksound",
+      "becomenude",
+      "bedrustle",
+      "bjcblackscreen",
+      "bjcdone",
+      "bjcmsg1",
+      "bjcmsg2",
+      "bjcmsg3",
+      "bjcmsg4",
+      "bjcmsg5",
+      "bjcmsg6",
+      "bjcmsg7",
+      "bjimsg1",
+      "bjimsg10",
+      "bjimsg11",
+      "bjimsg12",
+      "bjimsg2",
+      "bjimsg3",
+      "bjimsg4",
+      "bjimsg5",
+      "bjimsg6",
+      "bjimsg7",
+      "bjimsg8",
+      "bjimsg9",
+      "bjmoan",
+      "bjmsg1",
+      "bjmsg2",
+      "bjtdone",
+      "bjtmsg1",
+      "bjtready",
+      "blackscreen",
+      "boobjob_camera",
+      "breath",
+      "carry_fastdone",
+      "carry_introcam",
+      "carry_introcam2",
+      "carry_intromsg1",
+      "carry_intromsg2",
+      "carry_slowdone",
+      "clap",
+      "cowgirlcummsg1",
+      "cowgirlcummsg2",
+      "cowgirlcummsg3",
+      "cowgirlcummsg4",
+      "cowgirlcummsg5",
+      "cowgirlcummsg6",
+      "cowgirlfastdomdone",
+      "cowgirlfastdone",
+      "cowgirlfastmsg1",
+      "cowgirlfastready",
+      "cowgirlstartmsg0",
+      "cowgirlstartmsg1",
+      "cowgirlstartmsg2",
+      "cum",
+      "cumflate",
+      "cumflate_80",
+      "cumin",
+      "cummsg",
+      "doggy_cumdone",
+      "doggycumdone",
+      "doggycummsg1",
+      "doggycummsg2",
+      "doggycummsg3",
+      "doggycummsg4",
+      "doggycummsg5",
+      "doggyfastdone",
+      "doggyfastmsg1",
+      "doggyfastready",
+      "doggyintromsg1",
+      "doggyintromsg2",
+      "doggyintromsg3",
+      "doggyintromsg4",
+      "doggyintromsg5",
+      "doggylayonbeddone",
+      "doggylayonbedmsg1",
+      "doggylayonbedmsg2",
+      "doggylayonbedmsg3",
+      "doggylayonbedmsg4",
+      "doggymoan",
+      "doggyreset",
+      "doggyslowmsg1",
+      "doggyslowmsg2",
+      "doggystartmsg1",
+      "doggystartmsg2",
+      "doggystartmsg3",
+      "doggystartmsg4",
+      "doggystartmsg5",
+      "doggyswitch",
+      "drawitems",
+      "giggle",
+      "haa",
+      "headpatdone",
+      "headpatmsg1",
+      "headpatmsg2",
+      "headpatmsg3",
+      "headpatmsg4",
+      "heavybreathing",
+      "idle",
+      "insert",
+      "interested",
+      "lightbreathing",
+      "lipsound",
+      "mating_press_hardready",
+      "mating_press_softready",
+      "missionary_cummsg1",
+      "missionary_cummsg2",
+      "missionary_fastdone",
+      "missionary_fastmsg1",
+      "missionary_fastready",
+      "missionary_slowmsg1",
+      "mmm",
+      "moan",
+      "o",
+      "opensexui",
+      "orgasm",
+      "orgasm1",
+      "orgasm2",
+      "paizuri_cumstart",
+      "paizuri_fastdone",
+      "paizuri_startstep",
+      "paizurifastmsg1",
+      "paizuriready",
+      "paizurislowmsg1",
+      "paizuristartmsg1",
+      "paymentdone",
+      "paymentmsg1",
+      "paymentmsg2",
+      "paymentmsg3",
+      "paymentmsg4",
+      "pearl",
+      "plob",
+      "pound",
+      "pounding",
+      "removeitems",
+      "renderegg",
+      "reset",
+      "resetcumpercentage",
+      "sex_startmsg1",
+      "sexui",
+      "sexuion",
+      "sitdowndone",
+      "sitdownmsg1",
+      "slap",
+      "slide",
+      "small_inserts",
+      "startstrip",
+      "stripdone",
+      "stripmsg1",
+      "swap",
+      "swap_end",
+      "switch",
+      "talk_hornydone",
+      "talk_hornymsg1",
+      "talk_hornymsg2",
+      "talk_hornymsg3",
+      "talk_hornymsg4",
+      "talk_responsedone",
+      "talk_responsemsg1",
+      "talk_responsemsg2",
+      "talk_responsemsg3",
+      "thrust",
+      "touch",
+      "yep"
+    ]
+  },
+  "sound_events": [
+    "pleasurehorizons:kobold.bjmoan",
+    "pleasurehorizons:kobold.giggle",
+    "pleasurehorizons:kobold.haa",
+    "pleasurehorizons:kobold.heymaster",
+    "pleasurehorizons:kobold.interested",
+    "pleasurehorizons:kobold.lightbreathing",
+    "pleasurehorizons:kobold.master",
+    "pleasurehorizons:kobold.moan",
+    "pleasurehorizons:kobold.orgasm",
+    "pleasurehorizons:kobold.sad",
+    "pleasurehorizons:kobold.yep",
+    "pleasurehorizons:lucy.aftersessionmoan",
+    "pleasurehorizons:lucy.ahh",
+    "pleasurehorizons:lucy.bjmoan",
+    "pleasurehorizons:lucy.giggle",
+    "pleasurehorizons:lucy.happyoh",
+    "pleasurehorizons:lucy.heavybreathing",
+    "pleasurehorizons:lucy.hmph",
+    "pleasurehorizons:lucy.huh",
+    "pleasurehorizons:lucy.lightbreathing",
+    "pleasurehorizons:lucy.lipsound",
+    "pleasurehorizons:lucy.mmm",
+    "pleasurehorizons:lucy.moan",
+    "pleasurehorizons:lucy.sadoh",
+    "pleasurehorizons:lucy.sigh",
+    "pleasurehorizons:mika.aftersessionmoan",
+    "pleasurehorizons:mika.ahh",
+    "pleasurehorizons:mika.bjmoan",
+    "pleasurehorizons:mika.cometomommy",
+    "pleasurehorizons:mika.giggle",
+    "pleasurehorizons:mika.goodboy",
+    "pleasurehorizons:mika.happyoh",
+    "pleasurehorizons:mika.heavybreathing",
+    "pleasurehorizons:mika.hmph",
+    "pleasurehorizons:mika.huh",
+    "pleasurehorizons:mika.lightbreathing",
+    "pleasurehorizons:mika.lipsound",
+    "pleasurehorizons:mika.mmm",
+    "pleasurehorizons:mika.moan",
+    "pleasurehorizons:mika.mommyhorny",
+    "pleasurehorizons:mika.sadoh",
+    "pleasurehorizons:mika.sigh",
+    "pleasurehorizons:misc.bedrustle",
+    "pleasurehorizons:misc.belljingle",
+    "pleasurehorizons:misc.clap",
+    "pleasurehorizons:misc.cuminflation",
+    "pleasurehorizons:misc.inserts",
+    "pleasurehorizons:misc.plob",
+    "pleasurehorizons:misc.pounding",
+    "pleasurehorizons:misc.slap",
+    "pleasurehorizons:misc.slide",
+    "pleasurehorizons:misc.smallinserts",
+    "pleasurehorizons:misc.touch",
+    "pleasurehorizons:momo.ahh",
+    "pleasurehorizons:momo.bjmoan",
+    "pleasurehorizons:momo.giggle",
+    "pleasurehorizons:momo.happyoh",
+    "pleasurehorizons:momo.hey",
+    "pleasurehorizons:momo.hmph",
+    "pleasurehorizons:momo.huh",
+    "pleasurehorizons:momo.lightbreathing",
+    "pleasurehorizons:momo.mmm",
+    "pleasurehorizons:momo.moan",
+    "pleasurehorizons:momo.sadoh",
+    "pleasurehorizons:momo.sigh"
+  ],
+  "dialogue": {
+    "topics": [
+      "chat",
+      "compliment",
+      "flirt",
+      "joke",
+      "about_her",
+      "about_village"
+    ],
+    "ids": [
+      "about_alone",
+      "about_building",
+      "about_crowd_feel",
+      "about_fear",
+      "about_flowers_her",
+      "about_future",
+      "about_harvest",
+      "about_home",
+      "about_home_more",
+      "about_keepsake",
+      "about_land",
+      "about_likes",
+      "about_neighbours",
+      "about_neighbours_more",
+      "about_nights",
+      "about_past",
+      "about_past_more",
+      "about_prettier",
+      "about_staying",
+      "about_stores",
+      "about_treat",
+      "about_wealth",
+      "about_work",
+      "about_work_feel",
+      "asks_about_day",
+      "asks_about_plans",
+      "asks_how_you_are",
+      "asks_what_you_want",
+      "asks_why_me",
+      "bad_pun",
+      "bold_flirt",
+      "chat_baking",
+      "chat_close_call",
+      "chat_full_house",
+      "chat_hands",
+      "chat_honey",
+      "chat_nothing",
+      "chat_rain",
+      "chat_stars",
+      "chat_trinket",
+      "chat_wildflowers",
+      "compliment_brave",
+      "compliment_calm",
+      "compliment_deep",
+      "compliment_forward",
+      "compliment_garden",
+      "compliment_laugh",
+      "compliment_ribbon",
+      "compliment_room",
+      "compliment_steady",
+      "danger_flirt",
+      "dry_joke",
+      "flirt_close",
+      "flirt_dance",
+      "flirt_gift_promise",
+      "flirt_rustic",
+      "flirt_serious",
+      "flirt_stay",
+      "flirt_stayed_up",
+      "flirt_sweet",
+      "flirt_walk",
+      "gossip",
+      "hard_worker",
+      "joke_cake",
+      "joke_crowd",
+      "joke_flower",
+      "joke_forward",
+      "joke_gold",
+      "joke_quiet",
+      "joke_self",
+      "joke_skeleton",
+      "nice_hair",
+      "pretty_flower",
+      "quiet_moment",
+      "rustic_joke",
+      "shining",
+      "small_talk",
+      "soft_flirt",
+      "teasing",
+      "weather"
+    ]
+  }
+}

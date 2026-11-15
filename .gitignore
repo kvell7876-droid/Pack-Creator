@@ -1,0 +1,6 @@
+/target/
+/ui/node_modules/
+/ui/dist/
+/src-tauri/gen/
+target-test
+/test_pack/

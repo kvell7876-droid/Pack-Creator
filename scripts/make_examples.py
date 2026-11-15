@@ -1,0 +1,55 @@
+"""
+Makes `src-tauri/resources/examples.zip`: the game's own base girls (their models, textures, animations, event bindings, chat lines, profiles and the scenes) as examples for the
+Pack Creator's scene simulator and as models to learn from. Run it from the repository root after the game's assets change:
+
+    python tools/pack_creator/scripts/make_examples.py
+
+The zip keeps the game's own paths (`assets/pleasurehorizons/...`, `data/pleasurehorizons/...`). Sounds are included too (14 MB), so cues play in the simulator.
+"""
+import os
+import zipfile
+
+REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+ASSETS = os.path.join(REPO, 'src', 'main', 'resources', 'assets', 'pleasurehorizons')
+DATA = os.path.join(REPO, 'src', 'main', 'resources', 'data', 'pleasurehorizons')
+OUT = os.path.join(REPO, 'tools', 'pack_creator', 'src-tauri', 'resources', 'examples.zip')
+
+GIRLS = ['lucy', 'mika', 'momo', 'kobold', 'slime', 'bee_girl', 'wandering_merchant']
+
+
+def add(z, base, rel, prefix):
+    if not os.path.isfile(os.path.join(base, rel)):
+        print('missing, left out:', rel)
+        return
+
+    z.write(os.path.join(base, rel), f'{prefix}/{rel}'.replace('\\', '/'))
+
+
+with zipfile.ZipFile(OUT, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+    for girl in GIRLS:
+        for rel in [f'strut/models/nude/{girl}.strutmodel', f'strut/models/dressed/{girl}.strutmodel', f'textures/entities/{girl}.png', f'strut/event_bindings/girls/{girl}.json']:
+            add(z, ASSETS, rel, 'assets/pleasurehorizons')
+
+        add(z, DATA, f'girls/{girl}.json', 'data/pleasurehorizons')
+
+    for root, _, files in os.walk(os.path.join(ASSETS, 'strut', 'animations')):
+        for name in files:
+            rel = os.path.relpath(os.path.join(root, name), ASSETS).replace('\\', '/')
+
+            if '/block/' in rel or '/item/' in rel:
+                continue
+
+            add(z, ASSETS, rel, 'assets/pleasurehorizons')
+
+    for name in os.listdir(os.path.join(DATA, 'scenes')):
+        if name.endswith('.json'):
+            add(z, DATA, f'scenes/{name}', 'data/pleasurehorizons')
+
+    add(z, ASSETS, 'sounds.json', 'assets/pleasurehorizons')
+
+    for root, _, files in os.walk(os.path.join(ASSETS, 'sounds')):
+        for name in files:
+            if name.endswith('.ogg'):
+                add(z, ASSETS, os.path.relpath(os.path.join(root, name), ASSETS).replace(os.sep, '/'), 'assets/pleasurehorizons')
+
+print(OUT, round(os.path.getsize(OUT) / 1e6, 2), 'MB')
