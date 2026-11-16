@@ -1,7 +1,7 @@
 name: Build Windows EXE
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,3 +24,9 @@ jobs:
 
       - name: Build Tauri app
         run: .\ui\node_modules\.bin\tauri build --no-bundle
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: pack-creator-windows
+          path: target/release/pack-creator.exe
