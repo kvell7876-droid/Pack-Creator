@@ -1,0 +1,26 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install UI dependencies
+        run: npm install
+        working-directory: ui
+
+      - name: Build Tauri app
+        run: .\ui\node_modules\.bin\tauri build --no-bundle
